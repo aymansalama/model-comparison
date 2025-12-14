@@ -1,0 +1,38 @@
+task_id: movie_review_sentiment
+name: Movie Review Sentiment Analysis
+description: Binary sentiment classification for movie reviews from a custom dataset
+task_type: classification
+
+# Fields from the dataset to use as input
+input_fields:
+  - review_text
+
+# Field containing the ground truth label
+label_field: sentiment
+
+# Metrics to calculate for this task
+metrics:
+  - accuracy
+  - f1_macro
+  - precision
+  - recall
+
+# Jinja2 template for generating prompts
+# Available variables are the input_fields
+prompt_template: |
+  Classify the sentiment of the following movie review as either 'positive' or 'negative'.
+
+  Review: {{ review_text }}
+
+  Sentiment:
+
+# Dataset files for each split
+splits:
+  test: test_data.jsonl
+  validation: validation_data.jsonl
+
+# Optional: mapping from numeric labels to text labels
+# This helps with evaluation when models return text labels
+golden_format:
+  0: negative
+  1: positive
