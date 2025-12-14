@@ -104,8 +104,10 @@ class BedrockClient(ProviderClient):
         **kwargs,
     ) -> Dict[str, Any]:
         """Prepare request body based on model family."""
-        if "claude" in model_id.lower():
-            # Anthropic Claude models
+        model_lower = model_id.lower()
+
+        # Anthropic Claude models
+        if "claude" in model_lower or "anthropic" in model_lower:
             return {
                 "anthropic_version": "bedrock-2023-05-31",
                 "messages": [{"role": "user", "content": prompt}],
@@ -113,8 +115,9 @@ class BedrockClient(ProviderClient):
                 "max_tokens": max_tokens,
                 "top_p": top_p,
             }
-        elif "titan" in model_id.lower():
-            # Amazon Titan models
+
+        # Amazon Titan models
+        elif "titan" in model_lower:
             return {
                 "inputText": prompt,
                 "textGenerationConfig": {
@@ -123,16 +126,81 @@ class BedrockClient(ProviderClient):
                     "topP": top_p,
                 },
             }
-        elif "mistral" in model_id.lower() or "mixtral" in model_id.lower():
-            # Mistral models
+
+        # Mistral models (including Ministral and Magistral)
+        elif any(x in model_lower for x in ["mistral", "mixtral", "ministral", "magistral"]):
             return {
                 "prompt": prompt,
                 "temperature": temperature,
                 "max_tokens": max_tokens,
                 "top_p": top_p,
             }
+
+        # Meta Llama models
+        elif "llama" in model_lower or "meta" in model_lower:
+            return {
+                "prompt": prompt,
+                "temperature": temperature,
+                "max_gen_len": max_tokens,
+                "top_p": top_p,
+            }
+
+        # AI21 models (Jamba, Jurassic)
+        elif "ai21" in model_lower or "jamba" in model_lower or "jurassic" in model_lower:
+            return {
+                "prompt": prompt,
+                "temperature": temperature,
+                "maxTokens": max_tokens,
+                "topP": top_p,
+            }
+
+        # Cohere Command models
+        elif "cohere" in model_lower or "command" in model_lower:
+            return {
+                "prompt": prompt,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "p": top_p,
+            }
+
+        # NVIDIA Nemotron models
+        elif "nvidia" in model_lower or "nemotron" in model_lower:
+            return {
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+            }
+
+        # Qwen models
+        elif "qwen" in model_lower:
+            return {
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+            }
+
+        # Moonshot Kimi models
+        elif "moonshot" in model_lower or "kimi" in model_lower:
+            return {
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+            }
+
+        # OpenAI via Bedrock (GPT-OSS)
+        elif "openai" in model_lower or "gpt" in model_lower:
+            return {
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+            }
+
+        # Default: try Claude format
         else:
-            # Generic format (try Claude format)
             return {
                 "anthropic_version": "bedrock-2023-05-31",
                 "messages": [{"role": "user", "content": prompt}],
@@ -145,8 +213,10 @@ class BedrockClient(ProviderClient):
         self, response_body: Dict[str, Any], model_id: str
     ) -> Dict[str, Any]:
         """Parse response based on model family."""
-        if "claude" in model_id.lower():
-            # Anthropic Claude models
+        model_lower = model_id.lower()
+
+        # Anthropic Claude models
+        if "claude" in model_lower or "anthropic" in model_lower:
             content = response_body.get("content", [])
             text = content[0].get("text", "") if content else ""
             usage = response_body.get("usage", {})
@@ -157,8 +227,9 @@ class BedrockClient(ProviderClient):
                 "output_tokens": usage.get("output_tokens"),
                 "finish_reason": response_body.get("stop_reason"),
             }
-        elif "titan" in model_id.lower():
-            # Amazon Titan models
+
+        # Amazon Titan models
+        elif "titan" in model_lower:
             results = response_body.get("results", [])
             text = results[0].get("outputText", "") if results else ""
 
@@ -168,8 +239,9 @@ class BedrockClient(ProviderClient):
                 "output_tokens": results[0].get("tokenCount") if results else None,
                 "finish_reason": results[0].get("completionReason") if results else None,
             }
-        elif "mistral" in model_id.lower() or "mixtral" in model_id.lower():
-            # Mistral models
+
+        # Mistral models (including Ministral and Magistral)
+        elif any(x in model_lower for x in ["mistral", "mixtral", "ministral", "magistral"]):
             outputs = response_body.get("outputs", [])
             text = outputs[0].get("text", "") if outputs else ""
 
@@ -179,8 +251,96 @@ class BedrockClient(ProviderClient):
                 "output_tokens": None,
                 "finish_reason": outputs[0].get("stop_reason") if outputs else None,
             }
+
+        # Meta Llama models
+        elif "llama" in model_lower or "meta" in model_lower:
+            text = response_body.get("generation", "")
+
+            return {
+                "text": text,
+                "input_tokens": response_body.get("prompt_token_count"),
+                "output_tokens": response_body.get("generation_token_count"),
+                "finish_reason": response_body.get("stop_reason"),
+            }
+
+        # AI21 models (Jamba, Jurassic)
+        elif "ai21" in model_lower or "jamba" in model_lower or "jurassic" in model_lower:
+            completions = response_body.get("completions", [])
+            text = completions[0].get("data", {}).get("text", "") if completions else ""
+
+            return {
+                "text": text,
+                "input_tokens": None,
+                "output_tokens": None,
+                "finish_reason": completions[0].get("finishReason", {}).get("reason") if completions else None,
+            }
+
+        # Cohere Command models
+        elif "cohere" in model_lower or "command" in model_lower:
+            generations = response_body.get("generations", [])
+            text = generations[0].get("text", "") if generations else ""
+
+            return {
+                "text": text,
+                "input_tokens": None,
+                "output_tokens": None,
+                "finish_reason": generations[0].get("finish_reason") if generations else None,
+            }
+
+        # NVIDIA Nemotron models
+        elif "nvidia" in model_lower or "nemotron" in model_lower:
+            choices = response_body.get("choices", [])
+            text = choices[0].get("message", {}).get("content", "") if choices else ""
+            usage = response_body.get("usage", {})
+
+            return {
+                "text": text,
+                "input_tokens": usage.get("prompt_tokens"),
+                "output_tokens": usage.get("completion_tokens"),
+                "finish_reason": choices[0].get("finish_reason") if choices else None,
+            }
+
+        # Qwen models
+        elif "qwen" in model_lower:
+            choices = response_body.get("choices", [])
+            text = choices[0].get("message", {}).get("content", "") if choices else ""
+            usage = response_body.get("usage", {})
+
+            return {
+                "text": text,
+                "input_tokens": usage.get("prompt_tokens"),
+                "output_tokens": usage.get("completion_tokens"),
+                "finish_reason": choices[0].get("finish_reason") if choices else None,
+            }
+
+        # Moonshot Kimi models
+        elif "moonshot" in model_lower or "kimi" in model_lower:
+            choices = response_body.get("choices", [])
+            text = choices[0].get("message", {}).get("content", "") if choices else ""
+            usage = response_body.get("usage", {})
+
+            return {
+                "text": text,
+                "input_tokens": usage.get("prompt_tokens"),
+                "output_tokens": usage.get("completion_tokens"),
+                "finish_reason": choices[0].get("finish_reason") if choices else None,
+            }
+
+        # OpenAI via Bedrock (GPT-OSS)
+        elif "openai" in model_lower or "gpt" in model_lower:
+            choices = response_body.get("choices", [])
+            text = choices[0].get("message", {}).get("content", "") if choices else ""
+            usage = response_body.get("usage", {})
+
+            return {
+                "text": text,
+                "input_tokens": usage.get("prompt_tokens"),
+                "output_tokens": usage.get("completion_tokens"),
+                "finish_reason": choices[0].get("finish_reason") if choices else None,
+            }
+
+        # Default: try Claude format
         else:
-            # Try Claude format as default
             content = response_body.get("content", [])
             text = content[0].get("text", "") if content else ""
             usage = response_body.get("usage", {})

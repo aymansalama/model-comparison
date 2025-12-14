@@ -42,12 +42,67 @@ class Settings(BaseSettings):
 
     # Model pricing (USD per 1K tokens)
     MODEL_PRICING: dict = {
+        # OpenAI GPT-5 Series (estimated pricing)
+        "gpt-5.2": {"input": 0.02, "output": 0.06},
+        "gpt-5.2-pro": {"input": 0.03, "output": 0.09},
+        "gpt-5.2-instant": {"input": 0.01, "output": 0.03},
+        "gpt-5.1": {"input": 0.015, "output": 0.045},
+        "gpt-5-mini": {"input": 0.005, "output": 0.015},
+        "gpt-5-nano": {"input": 0.001, "output": 0.003},
+
+        # OpenAI GPT-4.1 Series (estimated pricing)
+        "gpt-4.1": {"input": 0.012, "output": 0.036},
+        "gpt-4.1-mini": {"input": 0.006, "output": 0.018},
+        "gpt-4.1-nano": {"input": 0.002, "output": 0.006},
+
+        # OpenAI GPT-4o Series
+        "gpt-4o": {"input": 0.005, "output": 0.015},
+        "gpt-4o-mini": {"input": 0.0015, "output": 0.006},
+
+        # OpenAI GPT-OSS Series
+        "gpt-oss-120b": {"input": 0.003, "output": 0.009},
+        "gpt-oss-20b": {"input": 0.001, "output": 0.003},
+
+        # OpenAI O-Series (Reasoning models - estimated pricing)
+        "o3": {"input": 0.025, "output": 0.075},
+        "o3-mini": {"input": 0.01, "output": 0.03},
+        "o4-mini": {"input": 0.012, "output": 0.036},
+
+        # Legacy OpenAI models
         "gpt-4-turbo-preview": {"input": 0.01, "output": 0.03},
         "gpt-4": {"input": 0.03, "output": 0.06},
         "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
-        "claude-3-opus": {"input": 0.015, "output": 0.075},
-        "claude-3-sonnet": {"input": 0.003, "output": 0.015},
-        "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
+
+        # Claude 4 Series (estimated pricing)
+        "anthropic.claude-4-opus": {"input": 0.025, "output": 0.125},
+        "anthropic.claude-4-sonnet": {"input": 0.005, "output": 0.025},
+        "anthropic.claude-4-haiku": {"input": 0.0005, "output": 0.0025},
+        "anthropic.claude-4.5-opus": {"input": 0.03, "output": 0.15},
+        "anthropic.claude-4.5-sonnet": {"input": 0.006, "output": 0.03},
+
+        # Claude 3.5 Series
+        "anthropic.claude-3.5-sonnet": {"input": 0.003, "output": 0.015},
+
+        # Claude 3 Series
+        "anthropic.claude-3-opus": {"input": 0.015, "output": 0.075},
+        "anthropic.claude-3-opus-20240229-v1:0": {"input": 0.015, "output": 0.075},
+        "anthropic.claude-3-sonnet": {"input": 0.003, "output": 0.015},
+        "anthropic.claude-3-sonnet-20240229-v1:0": {"input": 0.003, "output": 0.015},
+        "anthropic.claude-3-haiku": {"input": 0.00025, "output": 0.00125},
+        "anthropic.claude-3-haiku-20240307-v1:0": {"input": 0.00025, "output": 0.00125},
+        "anthropic.claude-instant": {"input": 0.0001, "output": 0.0003},
+
+        # Meta Llama (estimated pricing)
+        "meta.llama2-13b-chat": {"input": 0.0002, "output": 0.0004},
+        "meta.llama2-70b-chat": {"input": 0.0005, "output": 0.001},
+        "meta.llama3-8b-instruct": {"input": 0.0002, "output": 0.0004},
+        "meta.llama3-70b-instruct": {"input": 0.0005, "output": 0.001},
+
+        # Mistral Series (estimated pricing)
+        "mistral.large": {"input": 0.002, "output": 0.006},
+        "mistral.large-3": {"input": 0.003, "output": 0.009},
+        "mistral.medium": {"input": 0.001, "output": 0.003},
+        "mistral.small": {"input": 0.0005, "output": 0.0015},
     }
 
     # Benchmark defaults
